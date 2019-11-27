@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>MAP673 Tool Tip</title>
+
+  <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/cerulean/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-C++cugH8+Uf86JbNOnQoBweHHAe/wVKN/mb0lTybu/NZ9sEYbd+BbbYtNpWYAsNP" crossorigin="anonymous">
+   <!--Boot Strap Gives Style for the Page-->
+  <style>
+    #map {
+      width: 100%;
+      height: calc(40vh);
+    }
+      /*Styling the Map Div Created
+*/
+    #about {
+      max-height: calc(80vh);
+      overflow-y: scroll;
+    }
+      /*Styling the 'About' Div Tag size etc*/
+
+    .legend circle {
+      fill: none;
+      stroke: #ccc;
+    }
+   /*   I don't want these to be grey but they probably should be'*/
+    .legend text {
+      fill: #777;
+      font: 10px sans-serif;
+      text-anchor: middle;
+    }
+     /* //This text placement works but I could see how you could change this*/
+
+    #ui {
+      position: absolute;
+      right: 1em;
+      top: 1em;
+    }
+      /*Styling our UI div tag in relation to the map*/
+      
+    .state {
+      fill: #FFC0CB;
+      stroke: whitesmoke;
+      stroke-width: 1ß;
+    }
+     /* Changed it to hot pink - my hero!*/
+    .facility {
+      fill:  #00FF00;
+      stroke: white;
+      stroke-width: .3;
+      opacity: 1;
+    }
+      /*This really doesn't make a difference because the color work we do later'*/
+
+    .facility:hover {
+     stroke-width: 2;
+    }
+      /*I just realized got figure this out it won't mouse off for all facilities'OHH IT?S BECAUSE THEY ARE RED THE POWERLANTS*/
+    
+    
+    /* Small devices (landscape phones, 576px and up) */
+    @media (min-width: 576px) {}
+
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+      #map {
+        height: calc(60vh);
+      }
+    }
+
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {
+
+      #map {
+        height: calc(80vh);
+      }
+    }
+     /* Changes Map Dimensions for Devices*/
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <header class="row py-2 bg-dark text-white">
+      <div class="col mx-3">
+        <h1 class="h1">Pollution in Metric Tons by Different Facility Types</h1>
+      </div>
+    </header>
+      
+     <!-- Sizing the header-->
+
+    <section class="row bg-secondary "> <!--What comes below the title - container of map and below this map-->
+      <div class="col-12 col-md-2 col-lg-8 px-0"> <!--The map space-->
+        <div id="map" class="bg-light position-relative">
+          <div id="ui" class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Choose Your Destiny
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink"></div>
+          </div>
+            <!--This is all about the drop down menu (the div tag)-->
+        </div>
+      </div>
+       <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50"/> <!--I'm not sure how this is affecting the map-->
+       </svg>
+      <aside id="about" class="col-12 col-md-5 col-lg-4 text-dark py-2"> <!--This governs the section below the map-->
+        <section>
+          <h2 class="h2 text-dark">What Are You Looking At?</h2>
+          <p>This is Important! We have data about TRI facilities (Toxic Release Inventory) air pollution. Use the interface to conduct spatial analysis about different facilities</p>
+          <p>The Origin of the Data <a class="badge badge-success" href="https://www.epa.gov/toxics-release-inventory-tri-program/tri-data-and-tools"> EPA TRI Data and Tools
+              </a></p>
+          <p> How did this map get made?</p>
+             <li>Process Geographical Data Using D3 Documentation</li>
+             <li>Instantiate/Style Polygon and Point File</li>
+             <li>Build User Interactivity</li>
+             <li>Create a Meaningful Legend</li>
+        </section>
+      </aside> <!--End the Aside-->
+    </section>
+    <footer class="row bg-dark text-white py-3"> <!--Creation of the Footer-->
+      <div class="col mx-2">
+        <ul class="list-unstyled">
+          <li>Map authored by The_Head_Drog</li>
+          <li>For more information...
+            <a href="https://www.census.gov/geo/maps-data/data/tiger-cart-boundary.html">Cartographic Boundary Files</a>
+            and the
+            <a href="https://iaspub.epa.gov/triexplorer/trimetadata.showgroup?p_showtype=onoffsite">Toxic Release Report Metadata</a></li>
+        </ul>
+      </div>
+    </footer>
+  </div> <!-- end .container-fluid -->
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"> /*JQUERY CDN*/
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+  </script> <!--popper helps parse data but not sure we need it because of d3-->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"> /*Yay for bootstrap*/
+  </script>
+
+  <script src="https://d3js.org/d3.v5.js"></script> <!--Where the magic happens-->
+  <script src="https://unpkg.com/topojson@3"></script> <!--Helps us with topojson conversion-->
+  <script>
+    // asynchronous calls to data files
+const TGeo = d3.json('data/Ttopo.json');
+//const CLT = d3.csv('data/CLT.csv'); /*Bring the data in - just like L.geojson in leaflet*/
+
+// use promise to call all data files, then send data to callback
+Promise.all([TGeo])
+  .then(drawMap)
+  .catch(error => {
+    console.log(error)
+  });
+
+  // function called when Promise above is complete
+function drawMap(data) {
+  
+  console.log(data);  // our two datasets within an array
+
+  // data is array of our two datasets
+  const TData = data[0];
+ // const CLTData = data[1];
+    
+const mapContainer = d3.select('#map')
+
+// determine width and height of map from container
+const width = mapContainer.node().offsetWidth - 60; //moves map around
+const height = mapContainer.node().offsetHeight - 60;
+
+const svg = mapContainer // Creates Map Dimensions within div tag of map
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height) //created previously
+  .classed('position-absolute', true) // add bootstrap class
+  .style('top', 40) //moves position of the map around 
+  .style('left', 30);
+    
+  // declare a geographic path generator
+  // fit the extent to the width and height using the geojson
+  const projection = d3.geoAlbersUsa()
+    .fitSize([width, height], data);
+
+  // declare a path generator using the projection
+  const path = d3.geoPath()
+    .projection(projection);
+
+  // append states to the SVG
+  svg.append('g') // append a group element to the svg
+    .selectAll('path') // select multiple paths (that don't exist yet)
+    .data(TData.features) // use the feature data from the geojson
+    .join('path') // join the data to the now created path elements
+    .attr('d', path) // provide the d attribute for the SVG paths
+    .classed('ter', true) // give each path element a class name of state
+    
+const geojson = topojson.feature(TData, { //use that topojson cdn above to convery the smaller topojson into a json
+  type: 'GeometryCollection',
+  geometries: TData.objects.T.geometries // refers to gemoetries from which to draw states from
+});
+    
+} // end of drawMap function    
+
+
+      
+/*const tooltip = d3.select('.container-fluid').append('div')
+  .attr('class', 'my-tooltip bg-warning text-white py-1 px-2 rounded position-absolute invisible');
+
+// when mouse moves over the mapContainer
+mapContainer
+  .on('mousemove', event => {
+    // update the position of the tooltip
+    tooltip.style('left', (d3.event.pageX + 10) + 'px')
+      .style('top', (d3.event.pageY - 30) + 'px');
+  });    
+      
+// convert the TopoJSON into GeoJSON
+const countiesGeoJson = topojson.feature(countiesData, {
+  type: 'GeometryCollection',
+  geometries: countiesData.objects.counties.geometries
+});
+
+// append a new g element
+const counties = svg.append('g')
+  .selectAll('path')
+  .data(countiesGeoJson.features) // use the GeoJSON features
+  .join('path')  // join them to path elements
+  .attr('d', path)  // use our path generator to project them on the screen
+  .attr('class', 'county') // give each path element a class name of county
+
+// applies event listeners to our polygons for user interaction
+counties.on('mouseover', (d, i, nodes) => { // when mousing over an element
+    console.log(d)
+    d3.select(nodes[i]).classed('hover', true).raise(); // select it, add a class name, and bring to front
+  tooltip.classed('invisible', false).html(d.properties.NAME +
+    ' County') // make tooltip visible and update info 
+})
+.on('mouseout', (d, i, nodes) => { // when mousing out of an element
+  console.log(d)
+  d3.select(nodes[i]).classed('hover', false) // remove the class from the polygon
+  tooltip.classed('invisible', true) // hide the element 
+});
+
+
+const mapContainer = d3.select('#map')
+
+// determine width and height of map from container
+const width = mapContainer.node().offsetWidth - 60; //moves map around
+const height = mapContainer.node().offsetHeight - 60;
+
+const svg = mapContainer // Creates Map Dimensions within div tag of map
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height) //created previously
+  .classed('position-absolute', true) // add bootstrap class
+  .style('top', 40) //moves position of the map around 
+  .style('left', 30);
+
+const geojson = topojson.feature(TData, { //use that topojson cdn above to convery the smaller topojson into a json
+  type: 'GeometryCollection',
+  geometries: TData.objects.T.geometries // refers to gemoetries from which to draw states from
+});
+
+const tooltip = d3.select('.container-fluid').append('div') //creates basic tooltip
+  .attr('class', 'my-tooltip bg-warning text-white py-1 px-2 rounded position-absolute invisible');
+
+// when mouse moves over the mapContainer
+mapContainer
+  .on('mousemove', event => { // standard text from previous lab, styling on tooltip see hover above
+    // update the position of the tooltip
+    tooltip.style('left', (d3.event.pageX + 10) + 'px')
+      .style('top', (d3.event.pageY - 30) + 'px');
+  });    
+    
+const projection = d3.geoAlbersUsa() // a proper projection...
+  .fitSize([width, height], geojson);
+
+const path = d3.geoPath() // creates path from d3 - I imagine it like path from leaflet - creates basics for SVG
+  .projection(projection);
+
+    
+const states = svg.append('g')
+  .selectAll('path')
+  .data(geojson.features)
+  .join('path')
+  .attr('d', path)
+  .attr('ter');
+
+*/
+  </script>
+</body>
+
+</html>
